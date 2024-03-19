@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using CityInfo.API;
 using CityInfo.API.DbContexts;
 using CityInfo.API.Services;
@@ -57,20 +58,36 @@ builder.Services.AddDbContext<CityInfoContext>(dbContextOptions =>
 builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 //builder.Services.AddDbContext<CityInfoContext>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new()
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Authentication:Issuer"],
-            ValidAudience = builder.Configuration["Authentication:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"]))
-        };
-    });
+//builder.Services.AddAuthentication("Bearer")
+//    .AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new()
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = builder.Configuration["Authentication:Issuer"],
+//            ValidAudience = builder.Configuration["Authentication:Audience"],
+//            IssuerSigningKey = new SymmetricSecurityKey(
+//                Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"]))
+//        };
+//    });
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("MustBeFromAntwerp", policy => 
+//    {
+//        policy.RequireAuthenticatedUser();
+//        policy.RequireClaim("city", "Antwerp");
+//    });
+//});
+
+builder.Services.AddApiVersioning(setupAction =>
+{
+    setupAction.ReportApiVersions = true;
+    setupAction.AssumeDefaultVersionWhenUnspecified = true;
+    setupAction.DefaultApiVersion = new ApiVersion(1, 0);
+}).AddMvc();
 
 var app = builder.Build();
 
